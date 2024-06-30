@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summarizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Abstract AI</h1>
+        <form id="uploadForm">
+            <input type="file" id="fileInput" name="file" required>
+            <input type="number" id="wordLength" name="word_length" placeholder="Summary word length" required>
+            <button type="submit">Summarize</button>
+        </form>
+        <div id="spinner" class="spinner"></div>
+        <h2>Summary:</h2>
+        <pre id="summary"></pre>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const wordLength = document.getElementById('wordLength').value;
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('word_length', wordLength);
+
+            const spinner = document.getElementById('spinner');
+            const summaryElement = document.getElementById('summary');
+
+            // Show the spinner
+            spinner.style.display = 'block';
+            summaryElement.textContent = '';
+
+            try {
+                const response = await fetch('/summarize', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                summaryElement.textContent = result.summary;
+            } catch (error) {
+                summaryElement.textContent = 'An error occurred while summarizing the document.';
+            } finally {
+                // Hide the spinner
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+
